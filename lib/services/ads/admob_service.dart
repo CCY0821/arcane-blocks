@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:logging/logging.dart';
@@ -69,8 +70,9 @@ class AdMobService implements AdServiceInterface {
       // Initialize Google Mobile Ads SDK
       await MobileAds.instance.initialize();
 
-      // Configure request configuration for COPPA compliance
+      // 🛡️ Configure request configuration with test devices (Layer 2 Protection)
       final RequestConfiguration requestConfig = RequestConfiguration(
+        testDeviceIds: AdConfig.testDeviceIds,
         tagForChildDirectedTreatment: TagForChildDirectedTreatment.no,
         tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.no,
       );
@@ -78,7 +80,20 @@ class AdMobService implements AdServiceInterface {
       MobileAds.instance.updateRequestConfiguration(requestConfig);
 
       _isInitialized = true;
+
+      // Log current configuration for debugging
       _logger.info('AdMob initialized successfully');
+      _logger
+          .info('📊 Current build mode: ${kDebugMode ? "Debug" : "Release"}');
+      _logger.info(
+          '🔑 Test device IDs configured: ${AdConfig.testDeviceIds.isEmpty ? "None (all devices will see real ads in Release mode)" : AdConfig.testDeviceIds.join(", ")}');
+
+      if (AdConfig.testDeviceIds.isEmpty && !kDebugMode) {
+        _logger.warning(
+            '⚠️ No test devices configured! All devices will see real ads in Release mode.');
+        _logger.warning(
+            '💡 To add your device as a test device, check logs for device ID and add it to AdConfig.testDeviceIds');
+      }
 
       // Pre-load banner ad
       await _loadBannerAd();
@@ -106,11 +121,14 @@ class AdMobService implements AdServiceInterface {
     _loadState = AdLoadState.loading;
 
     try {
+      // 🛡️ Get ad unit ID with automatic test/production switching (Layer 1 Protection)
       final String adUnitId = Platform.isAndroid
-          ? AdConfig.androidBannerUnitId
-          : AdConfig.iosBannerUnitId;
+          ? AdConfig.getAndroidBannerUnitId()
+          : AdConfig.getIosBannerUnitId();
 
       _logger.fine('Loading banner ad with unit ID: $adUnitId');
+      _logger.fine(
+          'Current mode: ${kDebugMode ? "Debug (using test ID)" : "Release (using production ID)"}');
 
       _bannerAd = BannerAd(
         adUnitId: adUnitId,

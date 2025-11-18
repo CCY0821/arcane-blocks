@@ -3,6 +3,53 @@
 
 ---
 
+## 🛡️ 三層測試廣告保護機制
+
+本專案已實作**三層測試廣告保護系統**，確保開發過程絕對安全：
+
+### **第一層：模式自動檢測 (kDebugMode)**
+- ✅ Debug 模式 → 強制使用 Google 測試 ID (100% 安全)
+- ✅ Release/Profile 模式 → 使用您的真實 AdMob ID
+
+### **第二層：設備白名單 (testDeviceIds)**
+- ✅ 您的測試設備 → 即使在 Release 模式也顯示測試廣告
+- ✅ 其他設備 → 顯示真實廣告（僅在已替換真實 ID 後）
+
+### **第三層：占位符檢測 (嚴格模式)**
+- ✅ 運行時檢測：若忘記替換真實 ID，app 啟動時會立即崩潰並顯示錯誤訊息
+- ✅ 防止誤上架：絕對不會在生產環境使用占位符 ID
+
+### **使用流程示意圖**
+```
+┌─────────────────────────────────────────────────────────┐
+│ flutter run (Debug)                                      │
+│ → 第一層攔截 → 使用測試 ID → 100% 安全                   │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ flutter run --release (您的測試設備)                     │
+│ → 第一層：使用真實 ID (或占位符)                         │
+│ → 第二層攔截：設備在白名單中 → 顯示測試廣告              │
+│ → 目的：測試真實環境的廣告加載性能                        │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ flutter build apk --release (未替換真實 ID)              │
+│ → 構建成功 ✓ (占位符檢測在運行時觸發)                    │
+│ → 運行 app → 第三層攔截：檢測到占位符 → 拋出異常並崩潰   │
+│ → 錯誤訊息：提示必須替換真實 AdMob ID                    │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ flutter build apk --release (已替換真實 ID)              │
+│ → 構建成功 ✓                                            │
+│ → 運行 app → 第三層檢測通過 ✓                           │
+│ → 真實廣告正常顯示 (非白名單設備)                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## ⚠️ 當前狀態警告
 
 **🔴 應用程式目前使用的是 Google 測試 AdMob ID**
@@ -41,9 +88,93 @@
 
 ---
 
-## 🔧 取得正式 AdMob ID 步驟
+## 🔧 上架前準備流程
 
-### **步驟一：登入 AdMob Console**
+### **📍 總覽：您需要完成的步驟**
+
+1. [**獲取您的測試設備 ID**](#step0) (5 分鐘) ⭐ 優先完成
+2. [**登入 AdMob Console 並取得真實廣告 ID**](#step1) (15 分鐘)
+3. [**替換 Dart 程式碼中的占位符 ID**](#step2) (5 分鐘)
+4. [**替換 Android/iOS 設定檔中的 App ID**](#step3) (5 分鐘)
+5. [**驗證測試**](#step4) (10 分鐘)
+
+---
+
+<a name="step0"></a>
+## 📱 步驟零：獲取測試設備 ID (第二層保護)
+
+**為什麼需要這一步？**
+- 允許您在 Release 模式下測試真實環境的廣告加載性能
+- 確保即使使用真實 ID，您的設備也永遠顯示測試廣告
+- 避免誤點擊真實廣告產生費用或無效流量
+
+### **Android 設備 ID 獲取步驟**
+
+#### **方法一：運行 app 並查看日誌 (推薦)**
+
+1. **連接您的 Android 設備並運行 app**:
+   ```bash
+   flutter run --release
+   ```
+
+2. **在 app 啟動後，查看控制台日誌**，尋找類似以下訊息：
+   ```
+   I/Ads: Use RequestConfiguration.Builder().setTestDeviceIds(
+          Arrays.asList("33BE2250B43518CCDA7DE426D04EE231")
+         ) to get test ads on this device.
+   ```
+
+3. **複製 32 字元的十六進制字串**（例如：`33BE2250B43518CCDA7DE426D04EE231`）
+
+#### **方法二：使用 ADB Logcat**
+
+```bash
+# 運行 app 後，在另一個終端執行
+adb logcat | findstr "test device"
+```
+
+### **iOS 設備 ID 獲取步驟**
+
+1. 在 Xcode 中運行 app (Release 模式)
+2. 打開 Console (View → Debug Area → Show Debug Area)
+3. 搜尋 "To get test ads on this device"
+4. 複製顯示的設備 ID
+
+### **配置測試設備 ID**
+
+編輯 `lib/config/ad_config.dart`，找到 `testDeviceIds` 列表（約第 116 行）：
+
+**修改前**：
+```dart
+static const List<String> testDeviceIds = [
+  // TODO: Add your Android device ID here after running the app
+  // Example: '33BE2250B43518CCDA7DE426D04EE231',
+];
+```
+
+**修改後**：
+```dart
+static const List<String> testDeviceIds = [
+  '33BE2250B43518CCDA7DE426D04EE231',  // 您的 Android 設備 ID
+  // '987654321ABCDEF1234567890ABCDEF',  // 您的 iOS 設備 ID（如有）
+];
+```
+
+**驗證配置**：
+```bash
+# 運行 app 並查看日誌
+flutter run --release
+
+# 應該看到類似訊息：
+# [AdMobService] 🔑 Test device IDs configured: 33BE2250B43518CCDA7DE426D04EE231
+```
+
+---
+
+<a name="step1"></a>
+## 🔧 步驟一：登入 AdMob Console 並取得真實廣告 ID
+
+### **步驟 1.1：登入 AdMob Console**
 
 1. 前往 [Google AdMob](https://apps.admob.com/)
 2. 使用您的 Google 帳號登入

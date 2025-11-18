@@ -105,7 +105,7 @@ class AdSenseService implements AdServiceInterface {
       final html.ScriptElement script = html.ScriptElement()
         ..async = true
         ..src =
-            'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AdConfig.adSensePublisherId}';
+            'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AdConfig.getAdSensePublisherId()}';
 
       // Set up load/error handlers
       script.onLoad.listen((_) {
@@ -152,8 +152,8 @@ class AdSenseService implements AdServiceInterface {
     }
 
     return _AdSenseBannerWidget(
-      publisherId: AdConfig.adSensePublisherId,
-      adSlot: AdConfig.adSenseAdSlot,
+      publisherId: AdConfig.getAdSensePublisherId(),
+      adSlot: AdConfig.getAdSenseAdSlot(),
       onAdLoaded: () {
         _logger.info('AdSense banner ad loaded - potential CPM/CPC revenue');
       },
