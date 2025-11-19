@@ -1191,453 +1191,482 @@ class _GameBoardState extends State<GameBoard>
     return Focus(
       autofocus: true,
       onKeyEvent: _handleKeyEvent,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
         children: [
-          // 分數面板 - 保持在頂部原位置
-          // RepaintBoundary: 隔離分數模組，只在得分時更新
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: RepaintBoundary(
-              child: GameUIComponents.scoreInfoPanel(
-                gameState.score,
-                gameState.highScore,
-              ),
-            ),
-          ),
-
-          // 計時器已移至棋盤 Stack 中作為 Overlay 浮動層
-
-          const SizedBox(height: 8),
-
-          // 主遊戲區域
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final cellSize = _calculateCellSize(constraints);
-              return Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 左側區域（棋盤 + 觸控按鈕）
-                  Flexible(
-                    flex: 3,
-                    child: Column(
-                      children: [
-                        // 遊戲棋盤（附震動特效）
-                        AnimatedBuilder(
-                          animation: _shakeAnimation,
-                          builder: (context, child) {
-                            // 計算震動偏移值（左右快速抖動）
-                            double shakeOffset = 0.0;
-                            if (_shakeController.isAnimating) {
-                              // 使用sin函數產生快速左右震動效果
-                              shakeOffset = (math.sin(
-                                      _shakeAnimation.value * math.pi * 8) *
-                                  6);
-                            }
-
-                            return Transform.translate(
-                              offset: Offset(shakeOffset, 0),
-                              child: child,
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              // 只保留 border 和 boxShadow（外框效果）
-                              borderRadius: BorderRadius.circular(16),
-                              // 🔮 HUD Border - 霓虹描邊與輕微外發光
-                              border: Border.all(
-                                color: Color.lerp(
-                                    cyberpunkPrimary,
-                                    cyberpunkSecondary,
-                                    0.5)!, // cyan/magenta 混合
-                                width: 1, // 1px 霓虹描邊
-                              ),
-                              boxShadow: [
-                                // 原有陰影保留
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 8),
-                                ),
-                                // 霓虹外發光 - 青色
-                                BoxShadow(
-                                  color: cyberpunkPrimary.withOpacity(0.3),
-                                  blurRadius: cyberpunkGlowSoft, // 輕微外發光
-                                  offset: const Offset(0, 0),
-                                ),
-                                // 霓虹外發光 - 洋紅
-                                BoxShadow(
-                                  color: cyberpunkSecondary.withOpacity(0.2),
-                                  blurRadius: cyberpunkGlowSoft,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                  cyberpunkBorderRadiusLarge),
-                              child: Stack(
-                                children: [
-                                  // 🌃 背景漸層（移到 Stack 最底層）
-                                  Positioned.fill(
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            cyberpunkBgDeep, // 深層背景
-                                            cyberpunkAccent
-                                                .withOpacity(0.05), // 電光紫極淡
-                                            cyberpunkPrimary
-                                                .withOpacity(0.03), // 霓虹青極淡
-                                          ],
-                                          stops: const [0.0, 0.7, 1.0],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // 棋盤層
-                                  RepaintBoundary(
-                                    child: SizedBox(
-                                      width: GameState.colCount * cellSize,
-                                      height: GameState.rowCount * cellSize,
-                                      child: CustomPaint(
-                                        painter: BoardPainter(
-                                          gameState.board,
-                                          gameState.boardTypes,
-                                          gameState.currentTetromino,
-                                          ghostPiece: gameLogic
-                                                  .shouldShowGhostPiece()
-                                              ? gameLogic.calculateGhostPiece()
-                                              : null,
-                                          cellSize: cellSize,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // 注意：法術動畫已移至 main.dart 全螢幕層級
-
-                                  // 暫停或 Game Over 蓋板
-                                  if (!_dbgOnlyBoardAndSpell)
-                                    if (gameState.isPaused &&
-                                        !gameState.isGameOver)
-                                      GameUIComponents.overlayText(
-                                          'PAUSED', GameTheme.highlight),
-                                  if (!_dbgOnlyBoardAndSpell)
-                                    if (gameState.isGameOver)
-                                      GameUIComponents.overlayText(
-                                          'GAME OVER', GameTheme.highlight),
-
-                                  // 🎯 計時器浮動層 (Overlay 模式)
-                                  // 定位在棋盤頂部，半透明背景，不佔用佈局空間
-                                  Positioned(
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // 惡魔方塊三倍加成計時器
-                                        if (gameState.multiplierEndTime != null)
-                                          MultiplierTimerWidget(
-                                            gameState: gameState,
-                                            isOverlayMode: true,
-                                          ),
-                                        // 時間系符文效果計時器
-                                        RuneEffectTimerWidget(
-                                          gameState: gameState,
-                                          isOverlayMode: true,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+          // 主内容区域
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 分數面板 - 保持在頂部原位置
+              // RepaintBoundary: 隔離分數模組，只在得分時更新
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: RepaintBoundary(
+                  child: GameUIComponents.scoreInfoPanel(
+                    gameState.score,
+                    gameState.highScore,
                   ),
+                ),
+              ),
 
-                  const SizedBox(width: 16),
+              // 計時器已移至棋盤 Stack 中作為 Overlay 浮動層
 
-                  // 右側控制區
-                  Flexible(
-                    flex: 2,
-                    child: SafeArea(
-                      bottom: true,
-                      child: RepaintBoundary(
+              const SizedBox(height: 8),
+
+              // 主遊戲區域
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final cellSize = _calculateCellSize(constraints);
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 左側區域（棋盤 + 觸控按鈕）
+                      Flexible(
+                        flex: 3,
                         child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // 遊戲狀態指示器
-                            GameUIComponents.gameStatusIndicators(
-                              combo: gameState.scoringService.currentCombo,
-                              isBackToBackReady:
-                                  gameState.scoringService.isBackToBackReady,
-                              comboRank:
-                                  gameState.scoringService.comboRankDescription,
-                            ),
-                            const SizedBox(height: HudSpacing.kHudGap),
+                            // 遊戲棋盤（附震動特效）
+                            AnimatedBuilder(
+                              animation: _shakeAnimation,
+                              builder: (context, child) {
+                                // 計算震動偏移值（左右快速抖動）
+                                double shakeOffset = 0.0;
+                                if (_shakeController.isAnimating) {
+                                  // 使用sin函數產生快速左右震動效果
+                                  shakeOffset = (math.sin(
+                                          _shakeAnimation.value * math.pi * 8) *
+                                      6);
+                                }
 
-                            // 控制按鈕 (水平排列，提升視覺層次)
-                            // RepaintBoundary: 隔離控制按鈕，幾乎不變
-                            RepaintBoundary(
+                                return Transform.translate(
+                                  offset: Offset(shakeOffset, 0),
+                                  child: child,
+                                );
+                              },
                               child: Container(
-                                padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: GameTheme.primaryDark.withOpacity(0.4),
-                                  borderRadius: BorderRadius.circular(
-                                      cyberpunkBorderRadiusLarge),
+                                  // 只保留 border 和 boxShadow（外框效果）
+                                  borderRadius: BorderRadius.circular(16),
+                                  // 🔮 HUD Border - 霓虹描邊與輕微外發光
                                   border: Border.all(
-                                    color:
-                                        GameTheme.accentBlue.withOpacity(0.3),
-                                    width: 1,
+                                    color: Color.lerp(
+                                        cyberpunkPrimary,
+                                        cyberpunkSecondary,
+                                        0.5)!, // cyan/magenta 混合
+                                    width: 1, // 1px 霓虹描邊
                                   ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    // 設置按鈕
-                                    Expanded(
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 2),
-                                        child: ElevatedButton(
-                                          onPressed: () => _showSettingsPanel(),
-                                          style: GameTheme.primaryButtonStyle
-                                              .copyWith(
-                                            backgroundColor:
-                                                WidgetStateProperty.all(
-                                              GameTheme.accentBlue
-                                                  .withOpacity(0.8),
-                                            ),
-                                            padding: WidgetStateProperty.all(
-                                              const EdgeInsets.symmetric(
-                                                  vertical: 8),
-                                            ),
-                                            minimumSize:
-                                                WidgetStateProperty.all(
-                                              const Size(0, 36),
-                                            ),
-                                          ),
-                                          child: const Icon(Icons.settings,
-                                              size: 16),
-                                        ),
-                                      ),
+                                  boxShadow: [
+                                    // 原有陰影保留
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.5),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 8),
                                     ),
-
-                                    // 暫停/繼續按鈕
-                                    Expanded(
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 2),
-                                        child: ElevatedButton(
-                                          onPressed: () => setState(() {
-                                            if (gameState.isPaused) {
-                                              gameState.resumeGame();
-                                              gameState.audioService
-                                                  .resumeBackgroundMusic();
-                                            } else {
-                                              gameState.pauseGame();
-                                              gameState.audioService
-                                                  .pauseBackgroundMusic();
-                                            }
-                                          }),
-                                          style: (gameState.isPaused
-                                                  ? GameTheme
-                                                      .secondaryButtonStyle
-                                                  : GameTheme
-                                                      .primaryButtonStyle)
-                                              .copyWith(
-                                            padding: WidgetStateProperty.all(
-                                              const EdgeInsets.symmetric(
-                                                  vertical: 8),
-                                            ),
-                                            minimumSize:
-                                                WidgetStateProperty.all(
-                                              const Size(0, 36),
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            gameState.isPaused
-                                                ? Icons.play_arrow
-                                                : Icons.pause,
-                                            size: 16,
-                                          ),
-                                        ),
-                                      ),
+                                    // 霓虹外發光 - 青色
+                                    BoxShadow(
+                                      color: cyberpunkPrimary.withOpacity(0.3),
+                                      blurRadius: cyberpunkGlowSoft, // 輕微外發光
+                                      offset: const Offset(0, 0),
                                     ),
-
-                                    // 重新開始按鈕
-                                    Expanded(
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 2),
-                                        child: ElevatedButton(
-                                          onPressed: _startGame,
-                                          style: GameTheme.primaryButtonStyle
-                                              .copyWith(
-                                            backgroundColor:
-                                                WidgetStateProperty.all(
-                                              GameTheme.buttonDanger,
-                                            ),
-                                            padding: WidgetStateProperty.all(
-                                              const EdgeInsets.symmetric(
-                                                  vertical: 8),
-                                            ),
-                                            minimumSize:
-                                                WidgetStateProperty.all(
-                                              const Size(0, 36),
-                                            ),
-                                          ),
-                                          child: const Icon(Icons.refresh,
-                                              size: 16),
-                                        ),
-                                      ),
+                                    // 霓虹外發光 - 洋紅
+                                    BoxShadow(
+                                      color:
+                                          cyberpunkSecondary.withOpacity(0.2),
+                                      blurRadius: cyberpunkGlowSoft,
+                                      offset: const Offset(0, 0),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-
-                            const SizedBox(height: HudSpacing.kHudGap),
-
-                            // 統計數據區域 (2×2網格布局，提升空間利用率)
-                            // RepaintBoundary: 隔離統計數據，低頻更新
-                            RepaintBoundary(
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color:
-                                      GameTheme.secondaryDark.withOpacity(0.4),
+                                child: ClipRRect(
                                   borderRadius: BorderRadius.circular(
                                       cyberpunkBorderRadiusLarge),
-                                  border: Border.all(
-                                    color: GameTheme.gridLine.withOpacity(0.3),
-                                    width: 1,
+                                  child: Stack(
+                                    children: [
+                                      // 🌃 背景漸層（移到 Stack 最底層）
+                                      Positioned.fill(
+                                        child: DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                cyberpunkBgDeep, // 深層背景
+                                                cyberpunkAccent
+                                                    .withOpacity(0.05), // 電光紫極淡
+                                                cyberpunkPrimary
+                                                    .withOpacity(0.03), // 霓虹青極淡
+                                              ],
+                                              stops: const [0.0, 0.7, 1.0],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // 棋盤層
+                                      RepaintBoundary(
+                                        child: SizedBox(
+                                          width: GameState.colCount * cellSize,
+                                          height: GameState.rowCount * cellSize,
+                                          child: CustomPaint(
+                                            painter: BoardPainter(
+                                              gameState.board,
+                                              gameState.boardTypes,
+                                              gameState.currentTetromino,
+                                              ghostPiece: gameLogic
+                                                      .shouldShowGhostPiece()
+                                                  ? gameLogic
+                                                      .calculateGhostPiece()
+                                                  : null,
+                                              cellSize: cellSize,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // 注意：法術動畫已移至 main.dart 全螢幕層級
+
+                                      // 暫停或 Game Over 蓋板
+                                      if (!_dbgOnlyBoardAndSpell)
+                                        if (gameState.isPaused &&
+                                            !gameState.isGameOver)
+                                          GameUIComponents.overlayText(
+                                              'PAUSED', GameTheme.highlight),
+                                      if (!_dbgOnlyBoardAndSpell)
+                                        if (gameState.isGameOver)
+                                          GameUIComponents.overlayText(
+                                              'GAME OVER', GameTheme.highlight),
+
+                                      // 🎯 計時器浮動層 (Overlay 模式)
+                                      // 定位在棋盤頂部，半透明背景，不佔用佈局空間
+                                      Positioned(
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            // 惡魔方塊三倍加成計時器
+                                            if (gameState.multiplierEndTime !=
+                                                null)
+                                              MultiplierTimerWidget(
+                                                gameState: gameState,
+                                                isOverlayMode: true,
+                                              ),
+                                            // 時間系符文效果計時器
+                                            RuneEffectTimerWidget(
+                                              gameState: gameState,
+                                              isOverlayMode: true,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                child: Column(
-                                  children: [
-                                    // 第一行：行數 + 關卡
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: GameUIComponents
-                                              .linesStatComponent(
-                                            gameState.marathonSystem
-                                                .totalLinesCleared,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Expanded(
-                                          child: GameUIComponents
-                                              .levelStatComponent(
-                                            gameState
-                                                .marathonSystem.currentLevel,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-
-                                    // 第二行：Combo + 最後得分
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: GameUIComponents
-                                              .comboStatComponent(
-                                            gameState
-                                                .scoringService.currentCombo,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Expanded(
-                                          child: GameUIComponents
-                                              .lastScoreStatComponent(
-                                            gameState
-                                                .lastScoringResult?.description,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
                               ),
-                            ),
-
-                            const SizedBox(height: HudSpacing.kHudGap),
-
-                            // NEXT 預覽模組
-                            // RepaintBoundary: 隔離 NEXT 預覽，只在換方塊時更新
-                            RepaintBoundary(
-                              child: DemonWarningNextPiecePreview(
-                                nextTetromino: gameState.nextTetromino,
-                                nextTetrominos: gameState.nextTetrominos,
-                              ),
-                            ),
-
-                            const SizedBox(height: HudSpacing.kHudGap),
-
-                            // 符文能量區域 (全寬布局，優化空間利用)
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: GameTheme.primaryDark.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(
-                                    cyberpunkBorderRadiusLarge),
-                                border: Border.all(
-                                  color: GameTheme.accentBlue.withOpacity(0.4),
-                                  width: 1,
-                                ),
-                              ),
-                              child: RuneEnergyHUD(
-                                energyStatus:
-                                    gameState.runeEnergyManager.getStatus(),
-                                gap: snap(4.0,
-                                    MediaQuery.of(context).devicePixelRatio),
-                              ),
-                            ),
-
-                            // 保留与触控按钮区的安全间距
-                            SizedBox(
-                              height: snap(12.0,
-                                  MediaQuery.of(context).devicePixelRatio),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              );
-            },
+
+                      const SizedBox(width: 16),
+
+                      // 右側控制區
+                      Flexible(
+                        flex: 2,
+                        child: SafeArea(
+                          bottom: true,
+                          child: RepaintBoundary(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // 遊戲狀態指示器
+                                GameUIComponents.gameStatusIndicators(
+                                  combo: gameState.scoringService.currentCombo,
+                                  isBackToBackReady: gameState
+                                      .scoringService.isBackToBackReady,
+                                  comboRank: gameState
+                                      .scoringService.comboRankDescription,
+                                ),
+                                const SizedBox(height: HudSpacing.kHudGap),
+
+                                // 控制按鈕 (水平排列，提升視覺層次)
+                                // RepaintBoundary: 隔離控制按鈕，幾乎不變
+                                RepaintBoundary(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: GameTheme.primaryDark
+                                          .withOpacity(0.4),
+                                      borderRadius: BorderRadius.circular(
+                                          cyberpunkBorderRadiusLarge),
+                                      border: Border.all(
+                                        color: GameTheme.accentBlue
+                                            .withOpacity(0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        // 設置按鈕
+                                        Expanded(
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 2),
+                                            child: ElevatedButton(
+                                              onPressed: () =>
+                                                  _showSettingsPanel(),
+                                              style: GameTheme
+                                                  .primaryButtonStyle
+                                                  .copyWith(
+                                                backgroundColor:
+                                                    WidgetStateProperty.all(
+                                                  GameTheme.accentBlue
+                                                      .withOpacity(0.8),
+                                                ),
+                                                padding:
+                                                    WidgetStateProperty.all(
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                                ),
+                                                minimumSize:
+                                                    WidgetStateProperty.all(
+                                                  const Size(0, 36),
+                                                ),
+                                              ),
+                                              child: const Icon(Icons.settings,
+                                                  size: 16),
+                                            ),
+                                          ),
+                                        ),
+
+                                        // 暫停/繼續按鈕
+                                        Expanded(
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 2),
+                                            child: ElevatedButton(
+                                              onPressed: () => setState(() {
+                                                if (gameState.isPaused) {
+                                                  gameState.resumeGame();
+                                                  gameState.audioService
+                                                      .resumeBackgroundMusic();
+                                                } else {
+                                                  gameState.pauseGame();
+                                                  gameState.audioService
+                                                      .pauseBackgroundMusic();
+                                                }
+                                              }),
+                                              style: (gameState.isPaused
+                                                      ? GameTheme
+                                                          .secondaryButtonStyle
+                                                      : GameTheme
+                                                          .primaryButtonStyle)
+                                                  .copyWith(
+                                                padding:
+                                                    WidgetStateProperty.all(
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                                ),
+                                                minimumSize:
+                                                    WidgetStateProperty.all(
+                                                  const Size(0, 36),
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                gameState.isPaused
+                                                    ? Icons.play_arrow
+                                                    : Icons.pause,
+                                                size: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        // 重新開始按鈕
+                                        Expanded(
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 2),
+                                            child: ElevatedButton(
+                                              onPressed: _startGame,
+                                              style: GameTheme
+                                                  .primaryButtonStyle
+                                                  .copyWith(
+                                                backgroundColor:
+                                                    WidgetStateProperty.all(
+                                                  GameTheme.buttonDanger,
+                                                ),
+                                                padding:
+                                                    WidgetStateProperty.all(
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                                ),
+                                                minimumSize:
+                                                    WidgetStateProperty.all(
+                                                  const Size(0, 36),
+                                                ),
+                                              ),
+                                              child: const Icon(Icons.refresh,
+                                                  size: 16),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: HudSpacing.kHudGap),
+
+                                // 統計數據區域 (2×2網格布局，提升空間利用率)
+                                // RepaintBoundary: 隔離統計數據，低頻更新
+                                RepaintBoundary(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: GameTheme.secondaryDark
+                                          .withOpacity(0.4),
+                                      borderRadius: BorderRadius.circular(
+                                          cyberpunkBorderRadiusLarge),
+                                      border: Border.all(
+                                        color:
+                                            GameTheme.gridLine.withOpacity(0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        // 第一行：行數 + 關卡
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: GameUIComponents
+                                                  .linesStatComponent(
+                                                gameState.marathonSystem
+                                                    .totalLinesCleared,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: GameUIComponents
+                                                  .levelStatComponent(
+                                                gameState.marathonSystem
+                                                    .currentLevel,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+
+                                        // 第二行：Combo + 最後得分
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: GameUIComponents
+                                                  .comboStatComponent(
+                                                gameState.scoringService
+                                                    .currentCombo,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: GameUIComponents
+                                                  .lastScoreStatComponent(
+                                                gameState.lastScoringResult
+                                                    ?.description,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: HudSpacing.kHudGap),
+
+                                // NEXT 預覽模組
+                                // RepaintBoundary: 隔離 NEXT 預覽，只在換方塊時更新
+                                RepaintBoundary(
+                                  child: DemonWarningNextPiecePreview(
+                                    nextTetromino: gameState.nextTetromino,
+                                    nextTetrominos: gameState.nextTetrominos,
+                                  ),
+                                ),
+
+                                const SizedBox(height: HudSpacing.kHudGap),
+
+                                // 符文能量區域 (全寬布局，優化空間利用)
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        GameTheme.primaryDark.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(
+                                        cyberpunkBorderRadiusLarge),
+                                    border: Border.all(
+                                      color:
+                                          GameTheme.accentBlue.withOpacity(0.4),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: RuneEnergyHUD(
+                                    energyStatus:
+                                        gameState.runeEnergyManager.getStatus(),
+                                    gap: snap(
+                                        4.0,
+                                        MediaQuery.of(context)
+                                            .devicePixelRatio),
+                                  ),
+                                ),
+
+                                // 保留与触控按钮区的安全间距
+                                SizedBox(
+                                  height: snap(12.0,
+                                      MediaQuery.of(context).devicePixelRatio),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // 觸控按鈕區域 - 置中顯示
+              Center(
+                child: TouchControls(
+                  gameLogic: gameLogic,
+                  gameState: gameState,
+                  onStateChange: () => setState(() {}),
+                ),
+              ),
+
+              // 為底部廣告預留空間，防止內容被遮擋
+              const SizedBox(height: 60),
+            ],
           ),
 
-          const SizedBox(height: 16),
-
-          // 觸控按鈕區域 - 置中顯示
-          Center(
-            child: TouchControls(
-              gameLogic: gameLogic,
-              gameState: gameState,
-              onStateChange: () => setState(() {}),
+          // 底部橫幅廣告 - 固定在屏幕底部
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: AdBanner(
+              showDebugInfo: true, // 開發模式顯示平台信息
+              onGamePauseRequested: _pauseGameForAdClick, // 廣告點擊時暫停遊戲
             ),
-          ),
-
-          // 底部橫幅廣告 - 不影響遊戲佈局
-          AdBanner(
-            showDebugInfo: true, // 開發模式顯示平台信息
-            onGamePauseRequested: _pauseGameForAdClick, // 廣告點擊時暫停遊戲
           ),
         ],
       ),

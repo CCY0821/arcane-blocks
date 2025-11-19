@@ -167,9 +167,7 @@ class _AdBannerState extends State<AdBanner> with WidgetsBindingObserver {
 
     // Show error state if initialization failed
     if (_initializationFailed) {
-      return widget.showDebugInfo
-          ? _buildErrorState()
-          : const SizedBox.shrink();
+      return _buildErrorState('Initialization failed');
     }
 
     // Show actual ad if service is available and initialized
@@ -178,11 +176,14 @@ class _AdBannerState extends State<AdBanner> with WidgetsBindingObserver {
 
       if (adWidget != null) {
         return _buildAdContainer(adWidget);
+      } else {
+        // Ad service initialized but no ad widget available
+        return _buildErrorState('Ad not available');
       }
     }
 
-    // Fallback: don't show anything
-    return const SizedBox.shrink();
+    // Fallback: show error state
+    return _buildErrorState('Ad service not ready');
   }
 
   /// Build loading state widget.
@@ -231,7 +232,7 @@ class _AdBannerState extends State<AdBanner> with WidgetsBindingObserver {
   }
 
   /// Build error state widget.
-  Widget _buildErrorState() {
+  Widget _buildErrorState(String message) {
     return Container(
       width: double.infinity,
       height: AdConfig.bannerHeight,
@@ -244,10 +245,10 @@ class _AdBannerState extends State<AdBanner> with WidgetsBindingObserver {
           ),
         ),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
-          'Ad failed to load',
-          style: TextStyle(
+          'Ad Error: $message',
+          style: const TextStyle(
             color: Colors.red,
             fontSize: 10,
             fontWeight: FontWeight.w400,

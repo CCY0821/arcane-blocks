@@ -62,9 +62,9 @@ class AdConfig {
       'ca-app-pub-2605819411931057~2509314110';
 
   /// Production AdMob Banner Unit ID for Android
-  /// ✅ Configured: Your real Android Banner Unit ID
+  /// ✅ Configured: Your real Android Banner Unit ID (新应用包名配置)
   static const String _prodAndroidBannerUnitId =
-      'ca-app-pub-2605819411931057/4535328764';
+      'ca-app-pub-2605819411931057/7507609482';
 
   /// Production AdMob App ID for iOS
   /// TODO: Replace with your real iOS App ID
