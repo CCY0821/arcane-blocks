@@ -168,18 +168,6 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       Icons.menu_book,
                       child: _buildRuneCompendiumButton(),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // 旋轉系統資訊
-                    _buildSettingSection(
-                      'ROTATION SYSTEM',
-                      Icons.rotate_right,
-                      child: GameUIComponents.infoBox(
-                        'Super Rotation System (SRS)',
-                        label: 'SYSTEM',
-                      ),
-                    ),
                   ],
                 ),
               ),
