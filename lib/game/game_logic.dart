@@ -143,7 +143,7 @@ class GameLogic {
       final points = (scoringResult.points * gameState.scoreMultiplier).round();
       gameState.score += points;
 
-      // 🔧 修復：添加消行能量獲得 (每消行1行 = +50分，每100分 = 1格能量)
+      // 🔧 修復：添加消行能量獲得 (每消行1行 = +10分，每100分 = 1格能量)
       gameState.runeEnergyManager.addScore(clearedRows);
 
       // 🔥 檢查是否應該觸發惡魔方塊

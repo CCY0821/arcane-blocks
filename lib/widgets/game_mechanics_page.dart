@@ -162,7 +162,7 @@ class GameMechanicsPage extends StatelessWidget {
           _buildSectionTitle('⚡ 能量系統', Icons.battery_charging_full),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '• 消除 1 行 = +50 分',
+            '• 消除 1 行 = +10 分',
             '• 100 分 = 1 格能量',
             '• 最多儲存 3 格能量',
             '• 可保留溢出進度',
