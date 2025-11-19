@@ -1,4 +1,4 @@
-package com.example.flutter_tetris_game
+package com.quark.arcaneblocks
 
 import io.flutter.embedding.android.FlutterActivity
 
