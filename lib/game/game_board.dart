@@ -283,7 +283,9 @@ class _GameBoardState extends State<GameBoard>
         }
 
         // 🎵 播放背景音樂（載入狀態場景）
-        if (gameState.audioService.isMusicEnabled && !gameState.isGameOver) {
+        if (gameState.audioService.isMusicEnabled &&
+            !gameState.isGameOver &&
+            !gameState.isPaused) {
           debugPrint('[Game] Starting background music after loading state');
           await gameState.audioService.playBackgroundMusic();
         }
@@ -323,8 +325,10 @@ class _GameBoardState extends State<GameBoard>
 
     // 🎵 統一背景音樂播放邏輯
     // 確保在所有啟動場景（載入狀態、新遊戲、維持現有遊戲）下都能播放音樂
-    // 只在非 Game Over 且音樂啟用時播放
-    if (gameState.audioService.isMusicEnabled && !gameState.isGameOver) {
+    // 只在非 Game Over、非暫停且音樂啟用時播放
+    if (gameState.audioService.isMusicEnabled &&
+        !gameState.isGameOver &&
+        !gameState.isPaused) {
       debugPrint('[Game] Starting background music in initState');
       await gameState.audioService.playBackgroundMusic();
     }
