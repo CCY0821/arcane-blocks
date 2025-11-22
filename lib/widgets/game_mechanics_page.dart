@@ -125,11 +125,11 @@ class GameMechanicsPage extends StatelessWidget {
                   tabs: const [
                     Tab(
                       icon: Icon(Icons.auto_awesome, size: 20),
-                      text: '符文系統',
+                      text: 'Rune System',
                     ),
                     Tab(
                       icon: Icon(Icons.diamond, size: 20),
-                      text: '惡魔方塊',
+                      text: 'Demon Block',
                     ),
                   ],
                 ),
@@ -159,43 +159,43 @@ class GameMechanicsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 標題
-          _buildSectionTitle('⚡ 能量系統', Icons.battery_charging_full),
+          _buildSectionTitle('Energy System', Icons.battery_charging_full),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '• 消除 1 行 = +10 分',
-            '• 100 分 = 1 格能量',
-            '• 最多儲存 3 格能量',
-            '• 可保留溢出進度',
+            '• Clear 1 line = +10 points',
+            '• 100 points = 1 energy bar',
+            '• Max 3 energy bars',
+            '• Overflow progress retained',
           ]),
           const SizedBox(height: 20),
 
           // 符文使用
-          _buildSectionTitle('🎯 符文使用', Icons.touch_app),
+          _buildSectionTitle('Rune Usage', Icons.touch_app),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '• 3 個符文槽位（可配置）',
-            '• 10 種符文可選',
-            '• 需消耗能量施放',
-            '• 每種符文有獨立冷卻時間',
+            '• 3 rune slots (configurable)',
+            '• 10 runes available',
+            '• Requires energy to cast',
+            '• Each rune has individual cooldown',
           ]),
           const SizedBox(height: 20),
 
           // 符文分類
-          _buildSectionTitle('📚 符文分類', Icons.category),
+          _buildSectionTitle('Rune Categories', Icons.category),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '瞬發類：立即生效',
-            '  例：Flame Burst, Thunder Strike',
+            'Instant: Takes effect immediately',
+            '  Example: Flame Burst, Thunder Strike',
             '',
-            '時間系：持續一段時間',
-            '  例：Gravity Reset, Titan Gravity',
-            '  ⚠️ 同時只能有 1 個時間系符文',
+            'Temporal: Lasts for a duration',
+            '  Example: Gravity Reset, Titan Gravity',
+            '  Only 1 temporal rune at a time',
           ]),
           const SizedBox(height: 16),
 
           // 提示
           _buildHintBox(
-            '💡 提示：在設定中查看「RUNE COMPENDIUM」了解所有符文詳情',
+            'Tip: Check "RUNE COMPENDIUM" in settings for all rune details',
           ),
         ],
       ),
@@ -210,44 +210,44 @@ class GameMechanicsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 觸發條件
-          _buildSectionTitle('🎯 觸發條件', Icons.flag),
+          _buildSectionTitle('Trigger Conditions', Icons.flag),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '• 達到特定分數門檻時觸發',
-            '• 分數越高，觸發越頻繁',
-            '• 無次數上限',
+            '• Triggers at specific score thresholds',
+            '• Higher scores = more frequent triggers',
+            '• No limit on occurrences',
           ]),
           const SizedBox(height: 20),
 
           // 方塊特徵
-          _buildSectionTitle('💎 方塊特徵', Icons.diamond),
+          _buildSectionTitle('Block Features', Icons.diamond),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '• 超大尺寸：10 格方塊',
-            '• 金色外觀（GOLD 顏色）',
-            '• 形狀隨機生成',
+            '• Super size: 10 cells',
+            '• Golden appearance (GOLD color)',
+            '• Random shape generation',
           ]),
           const SizedBox(height: 20),
 
           // 分數加成
-          _buildSectionTitle('🔥 分數加成', Icons.trending_up),
+          _buildSectionTitle('Score Bonus', Icons.trending_up),
           const SizedBox(height: 12),
           _buildInfoCard([
-            '放置惡魔方塊後觸發：',
+            'Activated after placing demon block:',
             '',
-            '✨ 所有得分 × 3 倍',
-            '⏱️ 持續 10 秒',
-            '🔄 可疊加時間',
+            'All scores × 3',
+            'Lasts 10 seconds',
+            'Time can stack',
             '',
-            '範例：',
-            '  剩餘 5 秒時再次觸發',
-            '  → 總時間變為 15 秒',
+            'Example:',
+            '  Trigger again with 5 seconds remaining',
+            '  → Total time becomes 15 seconds',
           ]),
           const SizedBox(height: 16),
 
           // 提示
           _buildHintBox(
-            '💡 提示：惡魔方塊雖然難以放置，但能帶來巨大的分數優勢！',
+            'Tip: Demon blocks are hard to place, but provide huge score advantages!',
           ),
         ],
       ),
