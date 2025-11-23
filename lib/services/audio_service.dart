@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AudioService {
   static final AudioService _instance = AudioService._internal();
@@ -11,6 +12,12 @@ class AudioService {
   final List<AudioPlayer> _sfxPlayerPool = [];
   static const int _maxSfxPlayers = 5; // 最多同時播放5個音效
   int _currentSfxPlayerIndex = 0;
+
+  // 🔑 持久化設定的 Key
+  static const String _musicEnabledKey = 'audio_music_enabled';
+  static const String _sfxEnabledKey = 'audio_sfx_enabled';
+  static const String _musicVolumeKey = 'audio_music_volume';
+  static const String _sfxVolumeKey = 'audio_sfx_volume';
 
   bool _isMusicEnabled = true;
   bool _isSfxEnabled = true;
@@ -26,6 +33,16 @@ class AudioService {
   // 初始化音頻服務
   Future<void> initialize() async {
     try {
+      // 💾 從本地存儲加載用戶設定
+      final prefs = await SharedPreferences.getInstance();
+      _isMusicEnabled = prefs.getBool(_musicEnabledKey) ?? true;
+      _isSfxEnabled = prefs.getBool(_sfxEnabledKey) ?? true;
+      _musicVolume = prefs.getDouble(_musicVolumeKey) ?? 0.8;
+      _sfxVolume = prefs.getDouble(_sfxVolumeKey) ?? 0.9;
+
+      print(
+          '[AudioService] Loaded settings: Music=$_isMusicEnabled, SFX=$_isSfxEnabled, MusicVol=$_musicVolume, SfxVol=$_sfxVolume');
+
       // 確保先停止現有播放器
       await _backgroundMusicPlayer.stop();
 
@@ -86,8 +103,26 @@ class AudioService {
 
   // 恢復背景音樂
   Future<void> resumeBackgroundMusic() async {
+    // 1. 如果全局开关没开，直接返回
     if (!_isMusicEnabled) return;
-    await _backgroundMusicPlayer.resume();
+
+    // 2. 检查播放器当前状态
+    final state = _backgroundMusicPlayer.state;
+
+    if (state == PlayerState.playing) {
+      // A. 已经在播放中：什么都不用做
+      print('[AudioService] Music already playing, no action needed');
+      return;
+    } else if (state == PlayerState.paused) {
+      // B. 处于暂停状态：恢复播放 (从暂停位置继续)
+      print('[AudioService] Resuming paused music');
+      await _backgroundMusicPlayer.resume();
+    } else {
+      // C. 处于停止(stopped)或初始(completed)状态：重新开始播放
+      // 这完美解决了 initialize() 调用 stop() 后的问题
+      print('[AudioService] Music stopped/completed, restarting playback');
+      await playBackgroundMusic();
+    }
   }
 
   // 播放音效
@@ -132,17 +167,32 @@ class AudioService {
     } else {
       await pauseBackgroundMusic();
     }
+
+    // 💾 保存設定到本地
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_musicEnabledKey, _isMusicEnabled);
+    print('[AudioService] Saved music enabled: $_isMusicEnabled');
   }
 
   // 音效開關
-  void toggleSfx() {
+  Future<void> toggleSfx() async {
     _isSfxEnabled = !_isSfxEnabled;
+
+    // 💾 保存設定到本地
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_sfxEnabledKey, _isSfxEnabled);
+    print('[AudioService] Saved SFX enabled: $_isSfxEnabled');
   }
 
   // 設定音樂音量
   Future<void> setMusicVolume(double volume) async {
     _musicVolume = volume.clamp(0.0, 1.0);
     await _backgroundMusicPlayer.setVolume(_musicVolume);
+
+    // 💾 保存設定到本地
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_musicVolumeKey, _musicVolume);
+    print('[AudioService] Saved music volume: $_musicVolume');
   }
 
   // 設定音效音量
@@ -152,6 +202,11 @@ class AudioService {
     for (final player in _sfxPlayerPool) {
       await player.setVolume(_sfxVolume);
     }
+
+    // 💾 保存設定到本地
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_sfxVolumeKey, _sfxVolume);
+    print('[AudioService] Saved SFX volume: $_sfxVolume');
   }
 
   // 清理資源

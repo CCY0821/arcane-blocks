@@ -1588,8 +1588,8 @@ class GameUIComponents {
                     borderRadius: BorderRadius.circular(cyberpunkBorderRadius),
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      AudioService().toggleSfx();
+                    onPressed: () async {
+                      await AudioService().toggleSfx();
                       setState(() {});
                     },
                     icon: Icon(
