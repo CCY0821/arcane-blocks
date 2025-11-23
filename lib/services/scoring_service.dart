@@ -60,7 +60,7 @@ class ScoringService {
     1: 100, // Single
     2: 300, // Double
     3: 500, // Triple
-    4: 800, // Tetris
+    4: 800, // Quad
   };
 
   // T-Spin 得分

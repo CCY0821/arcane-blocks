@@ -1,5 +1,5 @@
 # 隱私權政策 | Privacy Policy
-**Tetris Runes - Flutter Tetris Game**
+**Arcane Blocks**
 
 **最後更新日期**: 2025-01-XX
 **Last Updated**: 2025-01-XX
@@ -10,7 +10,7 @@
 
 ### 1. 資料收集聲明
 
-本應用程式「Tetris Runes」（以下簡稱「本應用」）尊重您的隱私權。我們收集以下資料：
+本應用程式「Arcane Blocks」（以下簡稱「本應用」）尊重您的隱私權。我們收集以下資料：
 
 #### 1.1 本地儲存資料
 - **遊戲進度資料**：分數、等級、已消除行數、符文配置
@@ -111,7 +111,7 @@
 
 ### 1. Data Collection
 
-**Tetris Runes** collects the following data:
+**Arcane Blocks** collects the following data:
 
 #### 1.1 Local Storage Data
 - **Game Progress**: scores, levels, cleared lines, rune configurations

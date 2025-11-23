@@ -1,7 +1,7 @@
 {
-  "name": "flutter-tetris-playwright-tests",
+  "name": "arcane-blocks-playwright-tests",
   "version": "1.0.0",
-  "description": "Playwright tests for Flutter Tetris game",
+  "description": "Playwright tests for Arcane Blocks game",
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
@@ -11,7 +11,7 @@
     "report": "playwright show-report",
     "install:browsers": "playwright install"
   },
-  "keywords": ["flutter", "tetris", "playwright", "testing", "e2e"],
+  "keywords": ["flutter", "arcane-blocks", "puzzle", "playwright", "testing", "e2e"],
   "author": "",
   "license": "MIT",
   "devDependencies": {

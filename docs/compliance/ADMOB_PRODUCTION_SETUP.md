@@ -189,7 +189,7 @@ flutter run --release
 1. 點擊側邊欄 **「應用程式」** → **「新增應用程式」**
 2. 選擇 **「iOS」** 平台
 3. 填寫應用程式資訊：
-   - **應用程式名稱**: `Tetris Runes`（或您的遊戲名稱）
+   - **應用程式名稱**: `Arcane Blocks`
    - **選擇應用程式是否已發布到商店**: 選擇 **「否」**（首次上架）
    - **App Store ID**: 留空（上架後再填）
 4. 點擊 **「新增」**
@@ -202,8 +202,8 @@ flutter run --release
 1. 點擊側邊欄 **「應用程式」** → **「新增應用程式」**
 2. 選擇 **「Android」** 平台
 3. 填寫應用程式資訊：
-   - **應用程式名稱**: `Tetris Runes`
-   - **套件名稱**: `com.yourcompany.flutter_tetris_game`（從 `build.gradle` 取得）
+   - **應用程式名稱**: `Arcane Blocks`
+   - **套件名稱**: `com.yourcompany.arcane_blocks`（從 `build.gradle` 取得）
 4. 點擊 **「新增」**
 5. **記下 App ID**
 

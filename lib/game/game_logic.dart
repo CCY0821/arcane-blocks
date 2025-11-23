@@ -181,7 +181,7 @@ class GameLogic {
   }
 
   /// 根據得分結果選擇並播放相應的音效
-  /// 優先級：T-Spin > 高連擊 > 一般連擊 > Tetris > 一般消行
+  /// 優先級：T-Spin > 高連擊 > 一般連擊 > Quad > 一般消行
   void _playLineClearSound(ScoringResult scoringResult, int clearedRows) {
     if (scoringResult.achievements.any((a) => a.contains('T-Spin'))) {
       gameState.audioService.playSoundEffect('t_spin');

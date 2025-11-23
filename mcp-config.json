@@ -26,7 +26,7 @@
     }
   },
   "flutterApp": {
-    "name": "flutter_tetris_game",
+    "name": "arcane_blocks",
     "url": "http://localhost:8080",
     "selectors": {
       "gameCanvas": "flt-canvas",
