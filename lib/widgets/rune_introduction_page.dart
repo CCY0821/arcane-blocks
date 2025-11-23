@@ -107,14 +107,14 @@ class RuneIntroductionPage extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildRuneCategory(
-                        '1 能量符文', cyberpunkSuccess, _getOneEnergyRunes()),
+                    _buildRuneCategory('1 ENERGY RUNES', cyberpunkSuccess,
+                        _getOneEnergyRunes()),
                     const SizedBox(height: 20),
-                    _buildRuneCategory(
-                        '2 能量符文', cyberpunkWarning, _getTwoEnergyRunes()),
+                    _buildRuneCategory('2 ENERGY RUNES', cyberpunkWarning,
+                        _getTwoEnergyRunes()),
                     const SizedBox(height: 20),
-                    _buildRuneCategory(
-                        '3 能量符文', cyberpunkDanger, _getThreeEnergyRunes()),
+                    _buildRuneCategory('3 ENERGY RUNES', cyberpunkDanger,
+                        _getThreeEnergyRunes()),
                   ],
                 ),
               ),
@@ -296,7 +296,7 @@ class RuneIntroductionPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '持續: ${rune.duration}',
+                        'Duration: ${rune.duration}',
                         style: GameTheme.bodyStyle.copyWith(
                           fontSize: 10,
                           color: cyberpunkTextSecondary,
@@ -354,19 +354,19 @@ class RuneIntroductionPage extends StatelessWidget {
   List<RuneData> _getOneEnergyRunes() {
     return [
       RuneData(
-        name: '🔥 Flame Burst',
+        name: 'Flame Burst',
         icon: Icons.local_fire_department,
         cost: 1,
         cooldown: '6s',
-        description: '精確選擇最有價值的目標清除，上方方塊結構整體下沉',
+        description: 'Clears the most valuable row, blocks above collapse down',
         categoryColor: cyberpunkSuccess,
       ),
       RuneData(
-        name: '🔄 Element Morph',
+        name: 'Element Morph',
         icon: Icons.transform,
         cost: 1,
         cooldown: '3s',
-        description: '當前方塊隨機變形',
+        description: 'Randomly transforms current piece',
         categoryColor: cyberpunkSuccess,
       ),
     ];
@@ -375,45 +375,45 @@ class RuneIntroductionPage extends StatelessWidget {
   List<RuneData> _getTwoEnergyRunes() {
     return [
       RuneData(
-        name: '⚡ Thunder Strike Right',
+        name: 'Thunder Strike Right',
         icon: Icons.flash_on,
         cost: 2,
         cooldown: '8s',
-        description: '清理棋盤最右側行',
+        description: 'Clears the rightmost column',
         categoryColor: cyberpunkWarning,
       ),
       RuneData(
-        name: '⚡ Thunder Strike Left',
+        name: 'Thunder Strike Left',
         icon: Icons.flash_off,
         cost: 2,
         cooldown: '8s',
-        description: '清理棋盤最左側行',
+        description: 'Clears the leftmost column',
         categoryColor: cyberpunkWarning,
       ),
       RuneData(
-        name: '⏸ Time Change',
+        name: 'Time Change',
         icon: Icons.slow_motion_video,
         cost: 2,
         cooldown: '18s',
         duration: '10s',
-        description: '下落速度 ×0.1，10秒後恢復原本速度',
+        description: 'Slows fall speed ×0.5 for 10 seconds',
         categoryColor: cyberpunkWarning,
       ),
       RuneData(
-        name: '🏔️ Titan Gravity',
+        name: 'Titan Gravity',
         icon: Icons.landscape,
         cost: 2,
         cooldown: '45s',
-        description: '使用泰坦引力消除縱向空洞，分段壓實方塊',
+        description: 'Eliminates vertical gaps, compressing blocks downward',
         categoryColor: cyberpunkWarning,
       ),
       RuneData(
-        name: '✨ Blessed Combo',
+        name: 'Blessed Combo',
         icon: Icons.star,
         cost: 2,
         cooldown: '20s',
         duration: '10s',
-        description: '10秒內自然消行分數 ×3',
+        description: 'Triples line-clear score for 10 seconds',
         categoryColor: cyberpunkWarning,
       ),
     ];
@@ -422,27 +422,27 @@ class RuneIntroductionPage extends StatelessWidget {
   List<RuneData> _getThreeEnergyRunes() {
     return [
       RuneData(
-        name: '🐉 Dragon Roar',
+        name: 'Dragon Roar',
         icon: Icons.whatshot,
         cost: 3,
         cooldown: '15s',
-        description: '清除最下方三列，上方方塊結構整體下沉',
+        description: 'Clears bottom 3 rows, blocks above collapse down',
         categoryColor: cyberpunkDanger,
       ),
       RuneData(
-        name: '😇 Angel\'s Grace',
+        name: 'Angel\'s Grace',
         icon: Icons.flight,
         cost: 3,
         cooldown: '60s',
-        description: '全部方塊清空',
+        description: 'Clears all blocks',
         categoryColor: cyberpunkDanger,
       ),
       RuneData(
-        name: '💫 Gravity Reset',
+        name: 'Gravity Reset',
         icon: Icons.vertical_align_bottom,
         cost: 3,
         cooldown: '25s',
-        description: '接下來五個方塊變成I',
+        description: 'Next 5 pieces become I-pieces',
         categoryColor: cyberpunkDanger,
       ),
     ];
