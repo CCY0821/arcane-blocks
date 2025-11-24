@@ -1,18 +1,14 @@
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 /// 惡魔方塊觸發管理器
 /// 負責管理惡魔方塊的觸發時機與頻率控制
-/// 使用加速式難度曲線（n^1.2），無次數上限
+/// 使用線性難度曲線（每10,000分觸發一次），無次數上限
 class DemonSpawnManager {
   /// 默認門檻表顯示範圍（僅用於調試顯示）
   static const int defaultTableSize = 30;
 
-  /// 指數基數（用於計算觸發門檻）
-  static const double exponent = 1.2;
-
-  /// 基礎分數門檻（第一次觸發）
-  static const int baseThreshold = 10000;
+  /// 觸發間隔（每次增加的分數）
+  static const int spawnInterval = 10000;
 
   /// 當前遊戲中已觸發次數（1-based）
   int _spawnCount = 0;
@@ -21,17 +17,17 @@ class DemonSpawnManager {
   int _lastScore = 0;
 
   /// 計算下一個觸發門檻
-  /// 公式：baseThreshold × (n^exponent)
+  /// 公式：n × spawnInterval
   /// 其中 n = _spawnCount + 1（下一次的序號）
   ///
   /// 範例：
   /// - n=1: 10,000
-  /// - n=2: 23,097
-  /// - n=3: 39,189
-  /// - n=30: 1,445,439
+  /// - n=2: 20,000
+  /// - n=3: 30,000
+  /// - n=30: 300,000
   int getNextThreshold() {
     final n = _spawnCount + 1; // 下一次的序號（1-based）
-    final threshold = (baseThreshold * pow(n, exponent)).round();
+    final threshold = n * spawnInterval;
 
     return threshold;
   }
@@ -90,7 +86,7 @@ class DemonSpawnManager {
   static List<int> getThresholdTable({int count = defaultTableSize}) {
     final thresholds = <int>[];
     for (int n = 1; n <= count; n++) {
-      final threshold = (baseThreshold * pow(n, exponent)).round();
+      final threshold = n * spawnInterval;
       thresholds.add(threshold);
     }
     return thresholds;
@@ -107,7 +103,7 @@ class DemonSpawnManager {
       {int count = defaultTableSize}) {
     final table = <int, Map<String, dynamic>>{};
     for (int n = 1; n <= count; n++) {
-      final threshold = (baseThreshold * pow(n, exponent)).round();
+      final threshold = n * spawnInterval;
       final estimatedLevel = estimateLevel(threshold);
 
       table[n] = {
