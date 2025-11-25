@@ -26,8 +26,8 @@ class RuneEffectTimerWidget extends StatelessWidget {
       return EffectTimerWidget(
         config: EffectTimerConfig(
           endTime: gameState.timeChangeEndTime,
-          effectName: '時間減速',
-          emoji: '⏰',
+          effectName: 'Slow-Mo',
+          emoji: '',
           primaryColor: const Color(0xFF673AB7), // 紫色
           secondaryColor: const Color(0xFF2196F3), // 藍色
           isOverlayMode: isOverlayMode,
@@ -40,8 +40,8 @@ class RuneEffectTimerWidget extends StatelessWidget {
       return EffectTimerWidget(
         config: EffectTimerConfig(
           endTime: gameState.blessedComboEndTime,
-          effectName: '祝福連擊',
-          emoji: '⭐',
+          effectName: 'Score x3',
+          emoji: '',
           primaryColor: const Color(0xFFFF9800), // 橙色
           secondaryColor: const Color(0xFFFFD700), // 金色
           isOverlayMode: isOverlayMode,
