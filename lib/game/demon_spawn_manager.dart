@@ -36,7 +36,7 @@ class DemonSpawnManager {
   ///
   /// 觸發條件：
   /// 1. 當前分數 >= 下一個門檻
-  /// 2. 當前分數 > 上次觸發的分數（防止重複觸發）
+  /// 2. 上次記錄的分數 < 下一個門檻（確保「跨越門檻」而非「已在門檻之上」）
   ///
   /// [currentScore] 當前遊戲分數
   /// 返回 true 表示應該生成惡魔方塊
@@ -47,8 +47,8 @@ class DemonSpawnManager {
     debugPrint(
         '[DemonSpawnManager] Check spawn: score=$currentScore, threshold=$threshold, lastScore=$_lastScore, spawnCount=$_spawnCount');
 
-    // 達到門檻且分數有增長（防止同一分數重複觸發）
-    if (currentScore >= threshold && currentScore > _lastScore) {
+    // ✅ 關鍵邏輯：檢查「從低於門檻到高於門檻」的跨越
+    if (currentScore >= threshold && _lastScore < threshold) {
       _lastScore = currentScore;
       _spawnCount++;
 
@@ -57,6 +57,11 @@ class DemonSpawnManager {
       debugPrint('[DemonSpawnManager] Next threshold: ${getNextThreshold()}');
 
       return true;
+    }
+
+    // ✅ 即使沒觸發，也要更新 _lastScore 記錄最新分數
+    if (currentScore > _lastScore) {
+      _lastScore = currentScore;
     }
 
     return false;
