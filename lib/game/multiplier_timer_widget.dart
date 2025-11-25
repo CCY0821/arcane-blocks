@@ -23,8 +23,8 @@ class MultiplierTimerWidget extends StatelessWidget {
     return EffectTimerWidget(
       config: EffectTimerConfig(
         endTime: gameState.multiplierEndTime,
-        effectName: '三倍加成',
-        emoji: '🔥',
+        effectName: 'Score x3',
+        emoji: '',
         primaryColor: const Color(0xFFDC143C), // 紅色
         secondaryColor: const Color(0xFFFFD700), // 金色
         isOverlayMode: isOverlayMode,
