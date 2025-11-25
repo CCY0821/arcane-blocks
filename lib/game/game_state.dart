@@ -390,6 +390,9 @@ class GameState {
     }
 
     scoreMultiplier = 3.0;
+
+    // 🔥 通知 UI 立即更新（顯示計時器）
+    _notifyUIUpdate?.call();
   }
 
   /// 檢查分數加成是否到期
@@ -403,6 +406,9 @@ class GameState {
         scoreMultiplier = 1.0;
         multiplierEndTime = null;
         debugPrint('[GameState] Score multiplier expired');
+
+        // 🔥 通知 UI 立即更新（隱藏計時器）
+        _notifyUIUpdate?.call();
       }
     }
   }
@@ -482,10 +488,15 @@ class GameState {
 
   /// 激活 Time Change 效果
   void activateTimeChange() {
+    if (_isTimeChangeActive) return; // 防止重複激活
+
     _isTimeChangeActive = true;
     _timeChangeEndTime = DateTime.now().add(const Duration(seconds: 10));
     // 原始速度由 marathonSystem 管理，不需要額外存儲
     debugPrint('[GameState] Time Change activated - speed multiplier: ×10');
+
+    // 🔥 通知 UI 立即更新（顯示計時器）
+    _notifyUIUpdate?.call();
   }
 
   /// 停用 Time Change 效果
@@ -493,6 +504,9 @@ class GameState {
     _isTimeChangeActive = false;
     _timeChangeEndTime = null;
     debugPrint('[GameState] Time Change deactivated - speed restored');
+
+    // 🔥 通知 UI 立即更新（隱藏計時器）
+    _notifyUIUpdate?.call();
   }
 
   /// 檢查 Time Change 是否激活
@@ -503,10 +517,15 @@ class GameState {
 
   /// 激活 Blessed Combo 效果
   void activateBlessedCombo() {
+    if (_isBlessedComboActive) return; // 防止重複激活
+
     _isBlessedComboActive = true;
     _blessedComboEndTime = DateTime.now().add(const Duration(seconds: 10));
     debugPrint(
         'GameState: Blessed Combo activated - natural line clear score ×3 for 10 seconds');
+
+    // 🔥 通知 UI 立即更新（顯示計時器）
+    _notifyUIUpdate?.call();
   }
 
   /// 停用 Blessed Combo 效果
@@ -515,6 +534,9 @@ class GameState {
     _blessedComboEndTime = null;
     debugPrint(
         'GameState: Blessed Combo deactivated - score multiplier restored');
+
+    // 🔥 通知 UI 立即更新（隱藏計時器）
+    _notifyUIUpdate?.call();
   }
 
   /// 檢查 Blessed Combo 是否激活

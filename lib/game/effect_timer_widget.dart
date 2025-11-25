@@ -71,6 +71,9 @@ class _EffectTimerWidgetState extends State<EffectTimerWidget>
         _updateTimerDisplay();
       }
     });
+
+    // 🔥 立即更新一次，不要等第一個 Timer tick（避免 0-50ms 空窗期）
+    _updateTimerDisplay();
   }
 
   void _updateTimerDisplay() {

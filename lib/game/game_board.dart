@@ -661,6 +661,9 @@ class _GameBoardState extends State<GameBoard>
     _currentSpeed = gameState.dropSpeed;
     _startGameTimer();
     debugPrint('[GameBoard] Timer restarted with speed: ${_currentSpeed}ms');
+
+    // 🔥 強制 rebuild game_board，讓計時器 UI 立即顯示
+    setState(() {});
   }
 
   @override
