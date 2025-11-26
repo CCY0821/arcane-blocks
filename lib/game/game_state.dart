@@ -178,7 +178,8 @@ class GameState {
   /// 如果 boardTypes 尺寸小於 board，則擴展它
   void ensureBoardTypesSync() {
     if (boardTypes.length < board.length) {
-      debugPrint('[GameState] Syncing boardTypes length: ${boardTypes.length} -> ${board.length}');
+      debugPrint(
+          '[GameState] Syncing boardTypes length: ${boardTypes.length} -> ${board.length}');
       while (boardTypes.length < board.length) {
         boardTypes.add(List.generate(colCount, (_) => null));
       }
@@ -434,6 +435,9 @@ class GameState {
   void pauseGame() {
     isPaused = true;
 
+    // 🛡️ 自動保存遊戲狀態（防止 App 在後台被殺死導致進度丟失）
+    saveState();
+
     // 保存分數加成剩餘時間
     if (multiplierEndTime != null) {
       _pausedMultiplierRemaining =
@@ -658,6 +662,7 @@ class GameState {
         scoringTotalLinesCleared: scoringService.totalLinesCleared,
         scoringMaxCombo: scoringService.maxCombo,
         scoringStatistics: scoringService.getStatistics(),
+        runeEnergyData: runeEnergyManager.toJson(),
       );
       return await GamePersistence.saveGameState(gameData);
     } catch (e) {
@@ -710,6 +715,12 @@ class GameState {
         maxCombo: gameData.scoringMaxCombo,
         statistics: gameData.scoringStatistics,
       );
+
+      // 恢復符文能量狀態
+      if (gameData.runeEnergyData != null) {
+        runeEnergyManager.fromJson(gameData.runeEnergyData!);
+        debugPrint('[GameState] Rune energy restored: $runeEnergyManager');
+      }
 
       debugPrint('Game state loaded successfully: $gameData');
       return true;

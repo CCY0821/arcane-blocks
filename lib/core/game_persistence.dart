@@ -10,7 +10,7 @@ import '../theme/tetromino_colors.dart';
 class GamePersistence {
   static const String _gameStateKey = 'tetris_game_state';
   static const String _runeLoadoutKey = 'tetris_rune_loadout';
-  static const int _stateVersion = 3; // 🔧 升級到版本 3：添加 D/U 型方塊映射，修正索引
+  static const int _stateVersion = 4; // 🔧 升級到版本 4：添加符文能量持久化
   static const int _runeLoadoutVersion = 1;
 
   /// 保存遊戲狀態
@@ -114,6 +114,7 @@ class GamePersistence {
         'maxCombo': gameData.scoringMaxCombo,
         'statistics': gameData.scoringStatistics,
       },
+      'runeEnergy': gameData.runeEnergyData,
     };
   }
 
@@ -131,6 +132,7 @@ class GamePersistence {
     final scoringData = map['scoringService'] as Map<String, dynamic>;
     final scoringStats =
         Map<String, int>.from(scoringData['statistics'] as Map);
+    final runeEnergyData = map['runeEnergy'] as Map<String, dynamic>?;
 
     return GameStateData(
       board: board,
@@ -158,6 +160,7 @@ class GamePersistence {
       scoringTotalLinesCleared: scoringData['totalLinesCleared'] as int,
       scoringMaxCombo: scoringData['maxCombo'] as int,
       scoringStatistics: scoringStats,
+      runeEnergyData: runeEnergyData,
     );
   }
 
@@ -337,6 +340,9 @@ class GameStateData {
   final int scoringMaxCombo;
   final Map<String, int> scoringStatistics;
 
+  // Rune Energy 狀態
+  final Map<String, dynamic>? runeEnergyData;
+
   const GameStateData({
     required this.board,
     required this.currentTetromino,
@@ -355,6 +361,7 @@ class GameStateData {
     required this.scoringTotalLinesCleared,
     required this.scoringMaxCombo,
     required this.scoringStatistics,
+    this.runeEnergyData,
   });
 
   /// 檢查遊戲狀態是否有效 (非新遊戲狀態)
