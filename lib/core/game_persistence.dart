@@ -10,7 +10,7 @@ import '../theme/tetromino_colors.dart';
 class GamePersistence {
   static const String _gameStateKey = 'tetris_game_state';
   static const String _runeLoadoutKey = 'tetris_rune_loadout';
-  static const int _stateVersion = 4; // 🔧 升級到版本 4：添加符文能量持久化
+  static const int _stateVersion = 5; // 🔧 升級到版本 5：添加符文效果計時器持久化
   static const int _runeLoadoutVersion = 1;
 
   /// 保存遊戲狀態
@@ -115,6 +115,9 @@ class GamePersistence {
         'statistics': gameData.scoringStatistics,
       },
       'runeEnergy': gameData.runeEnergyData,
+      'pausedMultiplierRemaining': gameData.pausedMultiplierRemainingMs,
+      'pausedTimeChangeRemaining': gameData.pausedTimeChangeRemainingMs,
+      'pausedBlessedComboRemaining': gameData.pausedBlessedComboRemainingMs,
     };
   }
 
@@ -133,6 +136,12 @@ class GamePersistence {
     final scoringStats =
         Map<String, int>.from(scoringData['statistics'] as Map);
     final runeEnergyData = map['runeEnergy'] as Map<String, dynamic>?;
+    final pausedMultiplierRemainingMs =
+        map['pausedMultiplierRemaining'] as int?;
+    final pausedTimeChangeRemainingMs =
+        map['pausedTimeChangeRemaining'] as int?;
+    final pausedBlessedComboRemainingMs =
+        map['pausedBlessedComboRemaining'] as int?;
 
     return GameStateData(
       board: board,
@@ -161,6 +170,9 @@ class GamePersistence {
       scoringMaxCombo: scoringData['maxCombo'] as int,
       scoringStatistics: scoringStats,
       runeEnergyData: runeEnergyData,
+      pausedMultiplierRemainingMs: pausedMultiplierRemainingMs,
+      pausedTimeChangeRemainingMs: pausedTimeChangeRemainingMs,
+      pausedBlessedComboRemainingMs: pausedBlessedComboRemainingMs,
     );
   }
 
@@ -343,6 +355,11 @@ class GameStateData {
   // Rune Energy 狀態
   final Map<String, dynamic>? runeEnergyData;
 
+  // 符文效果計時器（暫停時的剩餘時間，毫秒）
+  final int? pausedMultiplierRemainingMs;
+  final int? pausedTimeChangeRemainingMs;
+  final int? pausedBlessedComboRemainingMs;
+
   const GameStateData({
     required this.board,
     required this.currentTetromino,
@@ -362,6 +379,9 @@ class GameStateData {
     required this.scoringMaxCombo,
     required this.scoringStatistics,
     this.runeEnergyData,
+    this.pausedMultiplierRemainingMs,
+    this.pausedTimeChangeRemainingMs,
+    this.pausedBlessedComboRemainingMs,
   });
 
   /// 檢查遊戲狀態是否有效 (非新遊戲狀態)

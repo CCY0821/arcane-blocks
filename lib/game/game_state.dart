@@ -348,6 +348,18 @@ class GameState {
     demonSpawnManager.reset();
     scoreMultiplier = 1.0;
     multiplierEndTime = null;
+    _pausedMultiplierRemaining = null;
+
+    // 重置 Time Change 效果
+    _isTimeChangeActive = false;
+    _timeChangeEndTime = null;
+    _pausedTimeChangeRemaining = null;
+
+    // 重置 Blessed Combo 效果
+    _isBlessedComboActive = false;
+    _blessedComboEndTime = null;
+    _pausedBlessedComboRemaining = null;
+
     debugPrint(
         '[GameState] Score reset to: $score, Multiplier: $scoreMultiplier');
 
@@ -663,6 +675,10 @@ class GameState {
         scoringMaxCombo: scoringService.maxCombo,
         scoringStatistics: scoringService.getStatistics(),
         runeEnergyData: runeEnergyManager.toJson(),
+        pausedMultiplierRemainingMs: _pausedMultiplierRemaining?.inMilliseconds,
+        pausedTimeChangeRemainingMs: _pausedTimeChangeRemaining?.inMilliseconds,
+        pausedBlessedComboRemainingMs:
+            _pausedBlessedComboRemaining?.inMilliseconds,
       );
       return await GamePersistence.saveGameState(gameData);
     } catch (e) {
@@ -720,6 +736,32 @@ class GameState {
       if (gameData.runeEnergyData != null) {
         runeEnergyManager.fromJson(gameData.runeEnergyData!);
         debugPrint('[GameState] Rune energy restored: $runeEnergyManager');
+      }
+
+      // 恢復符文效果計時器（只在暫停狀態時恢復）
+      if (gameData.isPaused) {
+        if (gameData.pausedMultiplierRemainingMs != null) {
+          _pausedMultiplierRemaining =
+              Duration(milliseconds: gameData.pausedMultiplierRemainingMs!);
+          debugPrint(
+              '[GameState] Multiplier timer restored: ${_pausedMultiplierRemaining!.inSeconds}s');
+        }
+
+        if (gameData.pausedTimeChangeRemainingMs != null) {
+          _pausedTimeChangeRemaining =
+              Duration(milliseconds: gameData.pausedTimeChangeRemainingMs!);
+          _isTimeChangeActive = true; // 標記為激活狀態
+          debugPrint(
+              '[GameState] Time Change timer restored: ${_pausedTimeChangeRemaining!.inSeconds}s');
+        }
+
+        if (gameData.pausedBlessedComboRemainingMs != null) {
+          _pausedBlessedComboRemaining =
+              Duration(milliseconds: gameData.pausedBlessedComboRemainingMs!);
+          _isBlessedComboActive = true; // 標記為激活狀態
+          debugPrint(
+              '[GameState] Blessed Combo timer restored: ${_pausedBlessedComboRemaining!.inSeconds}s');
+        }
       }
 
       debugPrint('Game state loaded successfully: $gameData');
