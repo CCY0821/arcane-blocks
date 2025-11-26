@@ -4,6 +4,7 @@ import '../models/tetromino.dart';
 import '../services/audio_service.dart';
 import '../services/scoring_service.dart';
 import '../services/high_score_service.dart';
+import '../services/game_settings.dart';
 import '../core/game_persistence.dart';
 import '../core/ui_constants.dart';
 import 'marathon_system.dart';
@@ -130,8 +131,8 @@ class GameState {
   int totalSpellsCast = 0; // 總施放法術次數
   DateTime? gameStartTime; // 遊戲開始時間
 
-  // Ghost piece 設定
-  bool isGhostPieceEnabled = true;
+  // Ghost piece 設定（代理到全局設置）
+  bool get isGhostPieceEnabled => GameSettings().isGhostPieceEnabled;
 
   // 最後一次得分結果
   ScoringResult? lastScoringResult;
@@ -235,6 +236,7 @@ class GameState {
 
   Future<void> initializeAudio() async {
     await audioService.initialize();
+    await GameSettings().initialize();
     await _loadHighScore();
     await _loadRuneLoadout();
     _initializeRuneSystem();
@@ -632,7 +634,8 @@ class GameState {
 
   /// 切換Ghost piece顯示狀態
   void toggleGhostPiece() {
-    isGhostPieceEnabled = !isGhostPieceEnabled;
+    GameSettings().toggleGhostPiece();
+    // UI 層會調用 setState(() {}) 來更新顯示
   }
 
   /// 觸發畫面震動特效
@@ -665,7 +668,6 @@ class GameState {
         highScore: highScore,
         isGameOver: isGameOver,
         isPaused: isPaused,
-        isGhostPieceEnabled: isGhostPieceEnabled,
         marathonCurrentLevel: marathonSystem.currentLevel,
         marathonTotalLinesCleared: marathonSystem.totalLinesCleared,
         marathonLinesInCurrentLevel: marathonSystem.linesInCurrentLevel,
@@ -713,7 +715,6 @@ class GameState {
       highScore = gameData.highScore;
       isGameOver = gameData.isGameOver;
       isPaused = gameData.isPaused; // 保持暫停狀態
-      isGhostPieceEnabled = gameData.isGhostPieceEnabled;
 
       // 恢復 Marathon 系統狀態
       marathonSystem.setLevel(

@@ -10,7 +10,8 @@ import '../theme/tetromino_colors.dart';
 class GamePersistence {
   static const String _gameStateKey = 'tetris_game_state';
   static const String _runeLoadoutKey = 'tetris_rune_loadout';
-  static const int _stateVersion = 5; // 🔧 升級到版本 5：添加符文效果計時器持久化
+  static const int _stateVersion =
+      6; // 🔧 升級到版本 6：移除 isGhostPieceEnabled（改為全局設置）
   static const int _runeLoadoutVersion = 1;
 
   /// 保存遊戲狀態
@@ -101,7 +102,6 @@ class GamePersistence {
       'highScore': gameData.highScore,
       'isGameOver': gameData.isGameOver,
       'isPaused': gameData.isPaused,
-      'isGhostPieceEnabled': gameData.isGhostPieceEnabled,
       'marathonSystem': {
         'currentLevel': gameData.marathonCurrentLevel,
         'totalLinesCleared': gameData.marathonTotalLinesCleared,
@@ -159,7 +159,6 @@ class GamePersistence {
       highScore: map['highScore'] as int,
       isGameOver: map['isGameOver'] as bool,
       isPaused: map['isPaused'] as bool,
-      isGhostPieceEnabled: map['isGhostPieceEnabled'] as bool,
       marathonCurrentLevel: marathonData['currentLevel'] as int,
       marathonTotalLinesCleared: marathonData['totalLinesCleared'] as int,
       marathonLinesInCurrentLevel: marathonData['linesInCurrentLevel'] as int,
@@ -338,7 +337,6 @@ class GameStateData {
   final int highScore;
   final bool isGameOver;
   final bool isPaused;
-  final bool isGhostPieceEnabled;
 
   // Marathon System 狀態
   final int marathonCurrentLevel;
@@ -369,7 +367,6 @@ class GameStateData {
     required this.highScore,
     required this.isGameOver,
     required this.isPaused,
-    required this.isGhostPieceEnabled,
     required this.marathonCurrentLevel,
     required this.marathonTotalLinesCleared,
     required this.marathonLinesInCurrentLevel,
