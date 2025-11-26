@@ -147,10 +147,12 @@ class GameState {
   // Time Change 效果狀態
   bool _isTimeChangeActive = false;
   DateTime? _timeChangeEndTime;
+  Duration? _pausedTimeChangeRemaining; // 暫停時儲存剩餘時間
 
   // Blessed Combo 效果狀態
   bool _isBlessedComboActive = false;
   DateTime? _blessedComboEndTime;
+  Duration? _pausedBlessedComboRemaining; // 暫停時儲存剩餘時間
   late BlessedComboModifier _blessedComboModifier;
 
   // 惡魔方塊分數加成系統
@@ -431,6 +433,7 @@ class GameState {
   /// 暫停遊戲（同時暫停計時器）
   void pauseGame() {
     isPaused = true;
+
     // 保存分數加成剩餘時間
     if (multiplierEndTime != null) {
       _pausedMultiplierRemaining =
@@ -438,16 +441,47 @@ class GameState {
       debugPrint(
           '[GameState] Paused with ${_pausedMultiplierRemaining!.inSeconds}s multiplier remaining');
     }
+
+    // 保存 Time Change 剩餘時間
+    if (_timeChangeEndTime != null) {
+      _pausedTimeChangeRemaining =
+          _timeChangeEndTime!.difference(DateTime.now());
+      debugPrint(
+          '[GameState] Paused with ${_pausedTimeChangeRemaining!.inSeconds}s Time Change remaining');
+    }
+
+    // 保存 Blessed Combo 剩餘時間
+    if (_blessedComboEndTime != null) {
+      _pausedBlessedComboRemaining =
+          _blessedComboEndTime!.difference(DateTime.now());
+      debugPrint(
+          '[GameState] Paused with ${_pausedBlessedComboRemaining!.inSeconds}s Blessed Combo remaining');
+    }
   }
 
   /// 恢復遊戲（同時恢復計時器）
   void resumeGame() {
     isPaused = false;
+
     // 恢復分數加成計時器
     if (_pausedMultiplierRemaining != null) {
       multiplierEndTime = DateTime.now().add(_pausedMultiplierRemaining!);
       _pausedMultiplierRemaining = null;
       debugPrint('[GameState] Resumed with multiplier timer restored');
+    }
+
+    // 恢復 Time Change 計時器
+    if (_pausedTimeChangeRemaining != null) {
+      _timeChangeEndTime = DateTime.now().add(_pausedTimeChangeRemaining!);
+      _pausedTimeChangeRemaining = null;
+      debugPrint('[GameState] Resumed with Time Change timer restored');
+    }
+
+    // 恢復 Blessed Combo 計時器
+    if (_pausedBlessedComboRemaining != null) {
+      _blessedComboEndTime = DateTime.now().add(_pausedBlessedComboRemaining!);
+      _pausedBlessedComboRemaining = null;
+      debugPrint('[GameState] Resumed with Blessed Combo timer restored');
     }
   }
 

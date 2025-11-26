@@ -10,6 +10,7 @@ class EffectTimerConfig {
   final Color primaryColor;
   final Color secondaryColor;
   final bool isOverlayMode; // 是否為浮動層模式（半透明背景）
+  final bool isPaused; // 是否暫停（暫停時凍住畫面）
 
   const EffectTimerConfig({
     required this.endTime,
@@ -18,6 +19,7 @@ class EffectTimerConfig {
     required this.primaryColor,
     required this.secondaryColor,
     this.isOverlayMode = false, // 預設為非浮動層模式
+    this.isPaused = false, // 預設為未暫停
   });
 }
 
@@ -77,6 +79,11 @@ class _EffectTimerWidgetState extends State<EffectTimerWidget>
   }
 
   void _updateTimerDisplay() {
+    // 🔥 暫停時凍住畫面，不更新倒數
+    if (widget.config.isPaused) {
+      return;
+    }
+
     final endTime = widget.config.endTime;
 
     if (endTime == null) {

@@ -31,6 +31,7 @@ class RuneEffectTimerWidget extends StatelessWidget {
           primaryColor: const Color(0xFF673AB7), // 紫色
           secondaryColor: const Color(0xFF2196F3), // 藍色
           isOverlayMode: isOverlayMode,
+          isPaused: gameState.isPaused, // 🔥 傳遞暫停狀態
         ),
       );
     }
@@ -45,6 +46,7 @@ class RuneEffectTimerWidget extends StatelessWidget {
           primaryColor: const Color(0xFFFF9800), // 橙色
           secondaryColor: const Color(0xFFFFD700), // 金色
           isOverlayMode: isOverlayMode,
+          isPaused: gameState.isPaused, // 🔥 傳遞暫停狀態
         ),
       );
     }

@@ -28,6 +28,7 @@ class MultiplierTimerWidget extends StatelessWidget {
         primaryColor: const Color(0xFFDC143C), // 紅色
         secondaryColor: const Color(0xFFFFD700), // 金色
         isOverlayMode: isOverlayMode,
+        isPaused: gameState.isPaused, // 🔥 傳遞暫停狀態
       ),
     );
   }
