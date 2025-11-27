@@ -25,12 +25,6 @@ flutter build apk
 flutter build ios
 ```
 
-## 📖 文檔
-
-- **[TESTING.md](TESTING.md)** - 完整測試指南
-- **[COMBO_GUIDE.md](COMBO_GUIDE.md)** - 連擊系統說明
-- **[LOCAL_TESTING_GUIDE.md](LOCAL_TESTING_GUIDE.md)** - Marathon 模式測試
-
 ## 🛠️ 開發
 
 ### 環境需求
