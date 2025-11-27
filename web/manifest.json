@@ -1,11 +1,11 @@
 {
-    "name": "flutter_tetris_game",
-    "short_name": "flutter_tetris_game",
+    "name": "Arcane Blocks: Rune Grid",
+    "short_name": "Arcane Blocks",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A magical block puzzle game with innovative rune system",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

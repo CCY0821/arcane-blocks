@@ -1,17 +1,15 @@
-# 🎮 Flutter Tetris Game
+# 🎮 Arcane Blocks: Rune Grid
 
-一個基於 Flutter 的現代俄羅斯方塊遊戲，完全實現官方指導原則和競技級功能。
+一個基於 Flutter 的現代魔法方塊遊戲，結合經典方塊消除玩法與創新符文系統。
 
 ## ✨ 特色功能
 
-### 🎯 官方得分系統
-- 基於 [Tetris.wiki/Scoring](https://tetris.wiki/Scoring) 的現代指導原則
-- 標準消行得分：Single(100) → Double(300) → Triple(500) → Tetris(800)
+### 🎯 專業得分系統
+- 經典消行得分：Single(100) → Double(300) → Triple(500) → Quad(800)
 - T-Spin 系統：完整的 Mini/Normal T-Spin 支援
 - Back-to-Back 獎勵：困難消除的 1.5倍 分數加成
 
-### 🔥 官方連擊系統
-- 基於 [Tetris.wiki/Combo](https://tetris.wiki/Combo) 的標準規範
+### 🔥 進階連擊系統
 - 6 級連擊等級：Nice → Great → Excellent → Amazing → Incredible → LEGENDARY
 - 動態視覺效果：連擊等級對應不同顏色和特效
 - 完整統計追蹤：當前/最大連擊、總次數、積分統計
@@ -102,8 +100,8 @@ lib/
 
 ## 🏆 競技特性
 
-### 官方標準相容
-- ✅ 現代 Tetris 指導原則
+### 專業標準
+- ✅ 現代方塊遊戲機制
 - ✅ SRS 超級旋轉系統
 - ✅ 標準得分和連擊系統
 - ✅ T-Spin 和 Perfect Clear 支援
@@ -116,6 +114,6 @@ lib/
 
 ---
 
-🎯 **目標**：提供符合官方標準的專業級俄羅斯方塊遊戲體驗
+🎯 **目標**：提供專業級魔法方塊遊戲體驗，結合經典玩法與創新符文系統
 
-🚀 **願景**：成為 Flutter 生態系統中最完整的俄羅斯方塊實現
+🚀 **願景**：成為 Flutter 生態系統中最完整的魔法方塊遊戲實現
