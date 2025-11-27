@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.quark.arcaneblocks"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35  // Updated for Google Play API 35 requirement
     ndkVersion = "27.0.12077973"
 
     // Load keystore properties
@@ -47,8 +47,8 @@ android {
         applicationId = "com.quark.arcaneblocks"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21  // Android 5.0 Lollipop
+        targetSdk = 35  // Android 15 - Required for Google Play
         versionCode = flutter.versionCode()
         versionName = flutter.versionName()
     }
