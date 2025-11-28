@@ -34,10 +34,17 @@ android {
             // Check if key.properties was loaded successfully
             if (keystoreProperties.containsKey("keyAlias")) {
                 keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+
+                // Use environment variables for passwords (more secure)
+                // Fall back to key.properties if env vars not set
+                keyPassword = System.getenv("ARCANE_BLOCKS_KEY_PASSWORD")
+                    ?: keystoreProperties["keyPassword"] as String
+
                 // Use rootProject.file to ensure correct path from android/ directory
                 storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
+
+                storePassword = System.getenv("ARCANE_BLOCKS_KEYSTORE_PASSWORD")
+                    ?: keystoreProperties["storePassword"] as String
             }
         }
     }
